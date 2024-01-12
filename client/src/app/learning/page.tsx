@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <Tabs
       defaultValue={LearningItems.QUESTGEN}
-      className="w-full flex flex-col items-center"
+      className="w-full h-full flex flex-col items-center"
     >
       <TabsList className="w-full justify-around">
         <TabsTrigger value={LearningItems.QUESTGEN} className="w-1/2">
@@ -17,10 +17,10 @@ export default function Home() {
           {LearningItems.INQUIRY}
         </TabsTrigger>
       </TabsList>
-      <TabsContent value={LearningItems.QUESTGEN}>
+      <TabsContent value={LearningItems.QUESTGEN} className="h-full">
         <Questgen />
       </TabsContent>
-      <TabsContent value={LearningItems.INQUIRY}>
+      <TabsContent value={LearningItems.INQUIRY} className="h-full">
         <Inquiry />
       </TabsContent>
     </Tabs>
