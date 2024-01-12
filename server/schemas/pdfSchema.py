@@ -1,0 +1,2 @@
+class PDFCreate:
+    path: str

@@ -1,11 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import Base, engine
-from routers import demo
+from routers import demo, userRoute, pdfRoute
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
 app.include_router(demo.router)
+app.include_router(userRoute.router)
+app.include_router(pdfRoute.router)
+
+
 
 app.add_middleware(
     CORSMiddleware,
