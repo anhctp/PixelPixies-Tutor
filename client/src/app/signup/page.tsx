@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 
 const formSchema = z.object({
+  fullname: z.string(),
   email: z.string().email({
     message: "Invalid email format. Please enter a valid email address.",
   }),
@@ -27,7 +28,9 @@ export default function Home() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      fullname: "",
       email: "",
+      password: "",
     },
   });
 
@@ -41,7 +44,20 @@ export default function Home() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-1/2 flex flex-col items-center justify-center gap-4 font-light"
         >
-          <h1 className="text-3xl font-bold">Log in</h1>
+          <h1 className="text-3xl font-bold">Sign up</h1>
+          <FormField
+            control={form.control}
+            name="fullname"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel className="font-light">Fullname</FormLabel>
+                <FormControl>
+                  <Input placeholder="Your name" {...field} />
+                </FormControl>
+                <FormMessage className="text-red-500" />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="email"
@@ -73,12 +89,9 @@ export default function Home() {
             )}
           />
           <div>
-            {`Don't have an account?`}
-            <Link
-              className="text-pink-1 hover:border-b hover:border-pink-1"
-              href={"/signup"}
-            >
-              Join us now
+            {`Already have an account? `}
+            <Link className="text-pink-1 hover:border-b hover:border-pink-1" href={"/login"}>
+              Log in now
             </Link>
           </div>
           <button
