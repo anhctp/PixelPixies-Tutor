@@ -1,3 +1,5 @@
+import Evaluation from "@/components/evaluation";
+
 export default function Home() {
-  return <div className="text-pink">Application</div>;
+  return <Evaluation />;
 }

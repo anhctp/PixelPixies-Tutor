@@ -7,6 +7,7 @@ from controllers.userController import verifyToken
 
 from models.user import UserModel
 from models.question_list import QuestionType
+from schemas.questionSchemas import QuestGen
 
 
 router = APIRouter(
@@ -15,10 +16,24 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.post("/upload")
-def upload_pdf(pdf: UploadFile, db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken)):
+def upload_pdf(
+    pdf: UploadFile,
+    db: Session = Depends(getDatabase),
+    current_user: UserModel = Depends(verifyToken),
+):
     return PDFController.upload_pdf(pdf=pdf, db=db, current_user=current_user)
 
-@router.get("/pdf_to_text/{pdf_id}")
-def generate_question(pdf_id: int, type: QuestionType, db: Session = Depends(getDatabase)):
-    return PDFController.generate_question(pdf_id=pdf_id, type=type, db=db)
+
+@router.post("/pdf_to_text")
+def generate_question(payload: QuestGen, db: Session = Depends(getDatabase)):
+    return PDFController.generate_question(
+        pdf_id=payload.pdf_id,
+        type=payload.type,
+        db=db,
+        language=payload.language,
+        easy=payload.num_easy,
+        medium=payload.num_medium,
+        hard=payload.num_hard,
+    )

@@ -4,11 +4,21 @@ import Image from "next/image";
 import MobileNav from "../mobileNav.tsx";
 import { HeaderItem, headerNavLinks } from "@/services/header/headerHelper";
 import { useState } from "react";
+import { VscAccount } from "react-icons/vsc";
+import useAuthStore from "@/stores/authStore";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const [selectedItem, setSelectedItem] = useState<string>(HeaderItem.HOME);
+  const { authorized } = useAuthStore();
+  const logout = useAuthStore((state) => state.logout);
+  const router = useRouter();
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
   return (
-    <header className="flex items-center justify-between p-2 px-10 text-white bg-pink">
+    <header className="h-24 flex items-center justify-between p-2 px-10 text-white bg-pink">
       <div>
         <Link href="/" onClick={() => setSelectedItem(HeaderItem.HOME)}>
           <div className="flex items-center justify-between">
@@ -23,7 +33,7 @@ const Header = () => {
           </div>
         </Link>
       </div>
-      <div className="flex items-center space-x-4 leading-5 sm:space-x-6">
+      <div className="flex items-center text-xl  space-x-4 leading-5 sm:space-x-6">
         {headerNavLinks
           .filter((link) => link.href !== "/")
           .map((link) => (
@@ -32,12 +42,23 @@ const Header = () => {
               href={link.href}
               className={`${
                 link.id === selectedItem && "border-b border-white"
-              } hidden text-xl sm:block`}
+              } hidden sm:block`}
               onClick={() => setSelectedItem(link.id)}
             >
               {link.title}
             </Link>
           ))}
+        {authorized ? (
+          <VscAccount size={42} onClick={handleLogout} />
+        ) : (
+          <Link
+            onClick={() => setSelectedItem(HeaderItem.HOME)}
+            href={"/login"}
+            className="border text-pink bg-white rounded-xl px-4 py-2"
+          >
+            Start for free
+          </Link>
+        )}
         <MobileNav />
       </div>
     </header>
