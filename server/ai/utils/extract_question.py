@@ -15,17 +15,18 @@ def extract_mcq(question_list):
             if key == "Question":
                 current_question["question"] = value
                 current_question["options"] = []
-                current_question["true option"] = []
+                current_question["true_option"] = []
             elif key.startswith("Option"):
                 current_question["options"].append(value)
             elif key == "True option":
-                current_question["true option"].append(value)
+                current_question["true_option"].append(value)
 
                 # When we have collected all information for the current question, add it to the list
                 questions.append(current_question)
                 current_question = {}
 
     return questions
+
 
 def extract_tfq(question_list):
     question_list = question_list.strip().split("\n")

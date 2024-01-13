@@ -42,7 +42,7 @@ export const TableLearning: React.FC<Props> = ({
   return (
     <>
       {openQuestModal ? (
-        <QuestModal />
+        <QuestModal setOpenQuestModal={setOpenQuestModal} />
       ) : (
         <div className="w-full flex flex-col gap-4">
           {slice.length ? (

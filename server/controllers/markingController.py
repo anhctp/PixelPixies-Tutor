@@ -12,22 +12,70 @@ from models.marking import MarkingModel
 
 
 class MarkingController:
-    def upload_and_marking(img: UploadFile=File(...), db: Session = Depends(getDatabase), current_user: UserModel = Depends(verifyToken), bucket_name="tutor_pdf"):
-        path = upload_blob(bucket_name=bucket_name, file=img)
+    def upload_and_marking(
+        file: UploadFile = File(...),
+        question: str = "",
+        markingCriteria: str = "",
+        db: Session = Depends(getDatabase),
+        current_user: UserModel = Depends(verifyToken),
+        bucket_name="tutor_pdf",
+    ):
+        text = f"""
+            Question: 
+                {question}
+            Marking criterial:
+                {markingCriteria}
+            Answer: 
+                
+            """
+        path = upload_blob(bucket_name=bucket_name, file=file)
         uri = path["gcs_path"]
-        text = detect_document_uri(uri)
-        text = text + "\n" + marking_template
+        text = text + detect_document_uri(uri) + "\n" + marking_template
         chat_prompts = {"role": "user", "content": text}
         result = get_chat(messages=chat_prompts)
         print(result)
         marking = extract_marking(result)
         print(marking)
         new_marking = MarkingModel(
-            user_id = current_user.id,
-            img_path = path["path"],
-            score = marking['score'],
-            comment = marking['comment'],
-            advice = marking['advice'],
+            user_id=current_user.id,
+            img_path=path["path"],
+            score=marking["score"],
+            comment=marking["comment"],
+            advice=marking["advice"],
+        )
+        db.add(new_marking)
+        db.commit()
+        db.refresh(new_marking)
+        return new_marking
+
+    def upload_and_marking_context(
+        context: str = "",
+        question: str = "",
+        markingCriteria: str = "",
+        db: Session = Depends(getDatabase),
+        current_user: UserModel = Depends(verifyToken),
+    ):
+        text = f"""
+            Question: 
+                {question}
+            Marking criterial:
+                {markingCriteria}
+            Answer: 
+                
+            """
+
+        text = text + context + "\n" + marking_template
+        chat_prompts = {"role": "user", "content": text}
+        result = get_chat(messages=chat_prompts)
+        print(result)
+        marking = extract_marking(result)
+        print(marking)
+        new_marking = MarkingModel(
+            user_id=current_user.id,
+            img_path=context,
+            score=marking["score"],
+            comment=marking["comment"],
+            advice=marking["advice"],
         )
         db.add(new_marking)
         db.commit()

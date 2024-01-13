@@ -1,59 +1,55 @@
 "use client";
-import { IChatGPTPayload } from "@/services/learning/learningHelper";
+import {
+  fileEvaluation,
+  textEvaluation,
+} from "@/services/evaluation/evaluationApi";
+import { EvaluationResponse } from "@/services/evaluation/evaluationHelper";
 import { useState } from "react";
-import * as z from "zod";
-const formSchema = z.object({
-  question: z
-    .string()
-    .min(1, { message: "Question cannot be empty." })
-    .max(10, { message: "Question cannot exceed 10 characters." }),
-  answer: z
-    .string()
-    .max(50, { message: "Answer cannot exceed 50 characters." }),
-  markingCriteria: z
-    .string()
-    .max(10, { message: "Marking criteria cannot exceed 10 characters." })
-    .optional(),
-});
 
 const Evaluation = () => {
   const [question, setQuestion] = useState<string>("");
-  const [markingCriteria, setMarkingCriteria] = useState<string>("");
+  const [markingCriteria, setMarkingCriteria] = useState<string>(" ");
   const [file, setFile] = useState<File>();
   const [context, setContext] = useState<string>("");
   const [validationError, setValidationError] = useState<string>("");
 
-  const [response, setResponse] = useState<string>("");
+  const [response, setResponse] = useState<EvaluationResponse>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const promptChatGPT = async (payload: IChatGPTPayload) => {
+  const markingFile = async () => {
     setIsLoading(true);
-    setResponse("let me think...");
-    const response: Response = await fetch(
-      "http://127.0.0.1:8000/api/openai/gpt",
-      {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const reader = response.body!.getReader();
-    const decoder = new TextDecoder();
-
-    let completeResponse = "";
-
-    while (true) {
-      const { value, done: doneReading } = await reader.read();
-      if (doneReading) break;
-
-      const chunkValue = decoder.decode(value);
-      completeResponse += chunkValue;
-
-      setResponse(completeResponse);
+    if (file) {
+      await fileEvaluation({
+        file: file,
+        question: question,
+        markingCriteria: markingCriteria,
+      })
+        .then((value) => {
+          setResponse(value.data);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setIsLoading(false);
+        });
     }
-
-    setIsLoading(false);
+  };
+  const markingText = async () => {
+    setIsLoading(true);
+    if (context) {
+      await textEvaluation({
+        context: context,
+        question: question,
+        markingCriteria: markingCriteria,
+      })
+        .then((value) => {
+          setResponse(value.data);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setIsLoading(false);
+        });
+    }
   };
 
   const handleFileChange = (e: any) => {
@@ -69,6 +65,7 @@ const Evaluation = () => {
     setMarkingCriteria(e.target.value);
   };
   const onSubmit = () => {
+    setResponse(undefined);
     if ((!file && !context) || (file && context)) {
       setValidationError("Provide either a file or text content, not both.");
       return;
@@ -91,7 +88,11 @@ const Evaluation = () => {
     }
     setValidationError("");
 
-    promptChatGPT({ prompt: question });
+    if (context) {
+      markingText();
+    } else {
+      markingFile();
+    }
   };
   return (
     <div className="w-screen h-full flex flex-col items-center p-10">
@@ -151,7 +152,13 @@ const Evaluation = () => {
         {validationError && (
           <div className="text-rose-700">{validationError}</div>
         )}
-        <div>{response}</div>
+        {response && !isLoading && (
+          <div className="w-full flex flex-col gap-4 font-xl text-[#3ddabe]">
+            <div className="text-pink-1">Score: {response.score}/10</div>
+            <div>Comment: {response.comment}</div>
+            <div>Advice: {response.advice}</div>
+          </div>
+        )}
       </div>
     </div>
   );

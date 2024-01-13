@@ -7,6 +7,7 @@ from controllers.userController import verifyToken
 
 from models.user import UserModel
 from models.question_list import QuestionType
+from schemas.pdfSchema import TextUpload
 from schemas.questionSchemas import QuestGen
 
 
@@ -24,6 +25,15 @@ def upload_pdf(
     current_user: UserModel = Depends(verifyToken),
 ):
     return PDFController.upload_pdf(pdf=pdf, db=db, current_user=current_user)
+
+
+@router.post("/upload/text")
+def upload_text(
+    text: TextUpload,
+    db: Session = Depends(getDatabase),
+    current_user: UserModel = Depends(verifyToken),
+):
+    return PDFController.upload_text(text=text.text, db=db, current_user=current_user)
 
 
 @router.post("/pdf_to_text")
