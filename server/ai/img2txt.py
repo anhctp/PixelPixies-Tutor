@@ -48,32 +48,35 @@ def detect_document(path):
         )
     return result
 
-def img_to_txt(image_file):
-    credentials = service_account.Credentials.from_service_account_file(os.environ["GOOGLE_APPLICATION_CREDENTIALS"])
-    endpoint = "https://sunhackathon20.openai.azure.com/"
-    key = "bbd558e31b164b7898dcfe1f5579c041"
-    computervision_client = ComputerVisionClient(endpoint, CognitiveServicesCredentials(key))
 
-    # Open local image file
-    with open(image_file, "rb") as image:
-        # Call the API
-        read_response = computervision_client.read_in_stream(image, raw=True)
-    # Get the operation location (URL with an ID at the end)
-    read_operation_location = read_response.headers["Operation-Location"]
-    # Grab the ID from the URL
-    operation_id = read_operation_location.split("/")[-1]
-    # Retrieve the results 
-    while True:
-        read_result = computervision_client.get_read_result(operation_id)
-        if read_result.status.lower() not in ['notstarted', 'running']:
-            break
-        time.sleep(1)
-    # Get the detected text
-    if read_result.status == OperationStatusCodes.succeeded:
-        for page in read_result.analyze_result.read_results:
-            for line in page.lines:
-                # Print line
-                print(line.text)
 
-text = detect_document("/Users/thuy/Downloads/Work/PixelPixies-Tutor/server/ai/handwritten.png")
+
+def detect_document_uri(uri):
+    """Detects document features in the file located in Google Cloud
+    Storage."""
+    from google.cloud import vision
+
+    client = vision.ImageAnnotatorClient()
+    image = vision.Image()
+    image.source.image_uri = uri
+
+    response = client.document_text_detection(image=image)
+    res = ""
+    for page in response.full_text_annotation.pages:
+        for block in page.blocks:
+            for paragraph in block.paragraphs:
+
+                for word in paragraph.words:
+                    word_text = "".join([symbol.text for symbol in word.symbols])
+                    res += word_text
+                    res += " "
+
+    if response.error.message:
+        raise Exception(
+            "{}\nFor more info on error messages, check: "
+            "https://cloud.google.com/apis/design/errors".format(response.error.message)
+        )
+    return res
+
+text = detect_document_uri("gs://tutor_pdf/test1.jpg")
 print(text)

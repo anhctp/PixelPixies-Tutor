@@ -32,19 +32,15 @@ def embedding(message: str, engine="gpt-35-turbo"):
     print(embeddings)
     return response
 
-
-def get_chat(
-    messages: dict,
-    engine="gpt-35-turbo",
-):
+def get_chat(messages: dict, engine="gpt-35-turbo", type='generate_question'):
     # response = openai.ChatCompletion.create(
+    if type=='generate_question':
+        content="You are an tutor whose primary goal is to generate question for student to understand the document."
+    elif type=='marking':
+        content="You are an tutor whose primary goal is to grade student's exercise and correct it."
     response = client.chat.completions.create(
-        model="GPT35TURBO16K",  # replace this value with the deployment name you chose when you deployed the associated model.
-        messages=[
-            {
-                "role": "system",
-                "content": "You are an tutor whose primary goal is to generate question for student to understand the document.",
-            },
+        model="GPT35TURBO",# replace this value with the deployment name you chose when you deployed the associated model.
+        messages = [{"role":"system","content":content},
             messages,
         ],
     )
