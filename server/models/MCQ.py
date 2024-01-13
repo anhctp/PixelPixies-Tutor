@@ -12,7 +12,7 @@ class QuestionDifficulty(str, enum.Enum):
 class MCQModel(database.Base):
     __tablename__ = "MCQs"
     id = Column(Integer, primary_key=True, index=True)
-    question_list_id = Column(Integer, ForeignKey("Question_lists.id"))
+    question_list_id = Column(Integer, ForeignKey("Question_lists.id", ondelete="CASCADE"))
     question = Column(Text)
     opt1 = Column(Text)
     opt2 = Column(Text)

@@ -30,3 +30,24 @@ export const genQuest = (payload: GenQuest) => {
     },
   });
 };
+export const getListQuest = () => {
+  return axios.get("question", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const deleteListQuest = (listId: number) => {
+  return axios.delete(`question/${listId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const getQuestByListId = (listId: number) => {
+  return axios.get(`question/list/${listId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

@@ -5,7 +5,7 @@ import database
 class StepModel(database.Base):
     __tablename__ = "Steps"
     id = Column(Integer, primary_key=True, index=True)
-    roadmap_id = Column(Integer, ForeignKey("Roadmaps.id"))
+    roadmap_id = Column(Integer, ForeignKey("Roadmaps.id", ondelete="CASCADE"))
     step_number = Column(Integer)
     resource_name = Column(Text)
     resource_link = Column(Text)

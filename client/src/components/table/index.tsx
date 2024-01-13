@@ -7,6 +7,8 @@ import { IoMdOpen } from "react-icons/io";
 
 import Image from "next/image";
 import QuestModal from "../learning/me/questModal";
+import { deleteListQuest } from "@/services/learning/learningApi";
+import { useRouter } from "next/navigation";
 
 interface Props {
   headers: any[];
@@ -19,7 +21,7 @@ const styles = {
   tableRowHeader: "transition text-left",
   tableRowItems: "cursor-auto",
   tableHeader: "border-b border-stone-600 p-3 text-sm",
-  tableCell: "p-3 text-sm",
+  tableCell: "w-1/4 p-3 text-sm",
   tableCellDetail: "p-3 text-sm text-stone-600 cursor-pointer",
 };
 
@@ -29,11 +31,17 @@ export const TableLearning: React.FC<Props> = ({
   rowsPerPage,
 }) => {
   const [page, setPage] = useState(1);
+  const router = useRouter();
   const { slice, range } = useTable(data, page, rowsPerPage);
   const [selectedQuestId, setSelectedQuestId] = useState<number>(-1);
   const [openQuestModal, setOpenQuestModal] = useState<boolean>(false);
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     setSelectedQuestId(id);
+    await deleteListQuest(id)
+      .then(() => {
+        router.refresh();
+      })
+      .catch((err) => console.log(err));
   };
   const handleOpenQuest = (id: number) => {
     setSelectedQuestId(id);
@@ -42,7 +50,10 @@ export const TableLearning: React.FC<Props> = ({
   return (
     <>
       {openQuestModal ? (
-        <QuestModal setOpenQuestModal={setOpenQuestModal} />
+        <QuestModal
+          questId={selectedQuestId}
+          setOpenQuestModal={setOpenQuestModal}
+        />
       ) : (
         <div className="w-full flex flex-col gap-4">
           {slice.length ? (
@@ -58,10 +69,13 @@ export const TableLearning: React.FC<Props> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {slice.map((item) => (
-                    <tr className={styles.tableRowItems} key={item.id}>
-                      <td className={styles.tableCell}>{item.id}</td>
-                      <td className={styles.tableCell}>{item.name}</td>
+                  {slice.map((item, index) => (
+                    <tr className={styles.tableRowItems} key={index}>
+                      <td className={styles.tableCell}>{index + 1}</td>
+                      <td className={styles.tableCell}>{item.path}</td>
+                      <td className={styles.tableCell + " overflow-hidden"}>
+                        {item.content}
+                      </td>
                       <td
                         className={styles.tableCell + " flex justify-between"}
                       >
