@@ -93,8 +93,8 @@ export const TableLearning: React.FC<Props> = ({
           ) : (
             <div className="flex flex-col items-center justify-center gap-4 p-4 text-neutral-400 text-xl">
               <Image
-                src={"/deliveryMan.png"}
-                alt="delivery-man"
+                src={"/no-data.jpg"}
+                alt="no-data"
                 width={500}
                 height={500}
               />
