@@ -56,3 +56,9 @@ export interface GenQuest {
   num_medium: number;
   num_hard: number;
 }
+
+export enum QuestLevel {
+  EASY = "easy",
+  MEDIUM = "medium",
+  HARD = "hard",
+}

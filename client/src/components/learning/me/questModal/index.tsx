@@ -1,98 +1,88 @@
 import { useState } from "react";
+import Mcq from "./mcq";
+import { QuestLevel } from "@/services/learning/learningHelper";
+import { ScoreModal } from "./scoreModal";
+import Tf from "./tf";
 
-const QuestModal = () => {
-  const [answers, setAnswers] = useState({
-    q1: "",
-    q2: "",
-    q3: "",
-  });
+interface Props {
+  setOpenQuestModal: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-  const correctAnswers = {
-    q1: "paris",
-    q2: "false",
-    q3: "tokyo",
-  };
-
+const QuestModal: React.FC<Props> = (props) => {
+  const { setOpenQuestModal } = props;
   const [showCorrectAnswers, setShowCorrectAnswers] = useState(false);
+  const [openScoreModal, setOpenScoreModal] = useState(false);
+  const [point, setPoint] = useState<number>(0);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = () => {
     setShowCorrectAnswers(true);
+    setOpenScoreModal(true);
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold mb-2">
-            Question 1 (Multiple Choice)
-          </h2>
-          <label className="block">
-            What is the capital of France?
-            <div className="mt-2">
-              <input
-                type="radio"
-                name="q1"
-                value="paris"
-                checked={answers.q1 === "paris"}
-                onChange={(e) => setAnswers({ ...answers, q1: e.target.value })}
-              />
-              <span className="ml-2">Paris</span>
+    <div className="w-full">
+      <Mcq
+        id={1}
+        level={QuestLevel.EASY}
+        question="quest"
+        answers={["ans1", "ans2", "ans3", "ans4"]}
+        true_answer="ans1"
+        showAnswer={showCorrectAnswers}
+        setPoint={setPoint}
+      />
+      <Mcq
+        id={2}
+        level={QuestLevel.MEDIUM}
+        question="quest"
+        answers={["ans1", "ans2", "ans3", "ans4"]}
+        true_answer="ans1"
+        showAnswer={showCorrectAnswers}
+        setPoint={setPoint}
+      />
+      <Tf
+        id={3}
+        level={QuestLevel.HARD}
+        question="questme"
+        true_answer="True"
+        showAnswer={showCorrectAnswers}
+        setPoint={setPoint}
+      />
+      <Tf
+        id={4}
+        level={QuestLevel.HARD}
+        question="quest"
+        true_answer="True"
+        showAnswer={showCorrectAnswers}
+        setPoint={setPoint}
+      />
+      <div className="flex justify-center items-center">
+        {showCorrectAnswers ? (
+          <div className="w-full flex flex-col justify-center items-center gap-4">
+            <div className="text-3xl text-pink-1">
+              Score: {point}/{2}{" "}
             </div>
-          </label>
-        </div>
-
-        <div>
-          <h2 className="text-lg font-semibold mb-2">
-            Question 2 (True/False)
-          </h2>
-          <label className="block">
-            The Earth is flat.
-            <div className="mt-2">
-              <input
-                type="radio"
-                name="q2"
-                value="true"
-                checked={answers.q2 === "true"}
-                onChange={(e) => setAnswers({ ...answers, q2: e.target.value })}
-              />
-              <span className="ml-2">True</span>
-            </div>
-          </label>
-        </div>
-
-        <div>
-          <h2 className="text-lg font-semibold mb-2">
-            Question 3 (Fill in the Blank)
-          </h2>
-          <label className="block">
-            The capital of Japan is
-            <input
-              type="text"
-              name="q3"
-              value={answers.q3}
-              onChange={(e) => setAnswers({ ...answers, q3: e.target.value })}
-              className="border border-gray-300 px-2 py-1 mt-2"
-            />
-          </label>
-        </div>
-
-        <button
-          type="submit"
-          className="bg-blue-500 text-white py-2 px-4 rounded"
-        >
-          Submit
-        </button>
-      </form>
-
-      {showCorrectAnswers && (
-        <div className="mt-4">
-          <h2 className="text-lg font-semibold mb-2">Correct Answers</h2>
-          <p>1. What is the capital of France? - Paris</p>
-          <p>2. The Earth is flat. - False</p>
-          <p>3. The capital of Japan is - Tokyo</p>
-        </div>
+            <button
+              onClick={() => setOpenQuestModal(false)}
+              className="w-1/2 bg-pink rounded-lg py-2 text-white font-bold"
+            >
+              Back
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleSubmit}
+            className="w-1/2 bg-pink rounded-lg py-2 text-white font-bold"
+          >
+            Submit
+          </button>
+        )}
+      </div>
+      {openScoreModal && (
+        <ScoreModal
+          setOpenScoreModal={setOpenScoreModal}
+          correct={point}
+          total={2}
+        />
       )}
     </div>
   );
