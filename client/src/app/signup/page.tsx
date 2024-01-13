@@ -90,7 +90,10 @@ export default function Home() {
           />
           <div>
             {`Already have an account? `}
-            <Link className="text-pink-1 hover:border-b hover:border-pink-1" href={"/login"}>
+            <Link
+              className="text-pink-1 hover:border-b hover:border-pink-1"
+              href={"/login"}
+            >
               Log in now
             </Link>
           </div>
@@ -98,7 +101,7 @@ export default function Home() {
             className="w-full border border-2 border-black bg-pink rounded-lg py-2 font-bold"
             type="submit"
           >
-            Log in
+            Sign up
           </button>
         </form>
       </Form>
