@@ -1,5 +1,11 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+import enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum
 import database
+
+class QuestionDifficulty(str, enum.Enum):
+    EASY = "Easy"
+    MEDIUM = "Return"
+    HARD = "Hard"
 
 class MCQModel(database.Base):
     __tablename__ = "MCQs"

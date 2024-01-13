@@ -18,7 +18,12 @@ def upload_blob(bucket_name, file):
     blob.upload_from_file(io.BytesIO(file.file.read()), content_type='application/pdf')
 
     print("File uploaded successfully!")
-    return f'https://storage.cloud.google.com/{bucket_name}/{file.filename}'
+    path = f'https://storage.cloud.google.com/{bucket_name}/{file.filename}'
+    gcs_path = f'gs://{bucket_name}/{file.filename}'
+    return {
+        "path": path,
+        "gcs_path": gcs_path,
+    }
 
 def delete_file(bucket_name, file_name):
     # Set up Google Cloud Storage client
