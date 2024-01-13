@@ -111,8 +111,9 @@ const Inquiry = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-8 px-8">
-      <div className="font-bold text-center">
+    <div className="w-full h-full flex flex-col  items-center gap-8 px-8">
+      <h1 className="text-3xl font-bold">Documentation inquiry</h1>
+      <div className="text-sm text-gray-500 italic">
         {`Empower your quest for knowledge on our website where you ask about docs based on your input, creating a tailored learning experience just for you.`}
       </div>
       {renderStepContent()}

@@ -1,13 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QuestgenSendText from "./sendText";
 import QuestgenSendFile from "./sendFile";
 import {
-  QuestLevel,
+  QuestLang,
   QuestType,
-  levelQuestion,
+  langQuestion,
   typeQuestion,
 } from "@/services/learning/learningHelper";
+import { genQuest, uploadFilePdf } from "@/services/learning/learningApi";
 
 const Questgen = () => {
   const [step, setStep] = useState(1);
@@ -15,14 +16,19 @@ const Questgen = () => {
   const [selectedTypeQuest, setSelectedTypeQuest] = useState<string>(
     QuestType.MCQ
   );
-  const [selectedLevelQuest, setSelectedLevelQuest] = useState<string>(
-    QuestLevel.EASY
+  const [selectedLangQuest, setSelectedLangQuest] = useState<string>(
+    QuestLang.ENGLISH
   );
-  const [numQuest, setNumQuest] = useState<number>(0);
+  const [numEasyQuest, setNumEasyQuest] = useState<number>(3);
+  const [numMediumQuest, setNumMediumQuest] = useState<number>(3);
+  const [numHardQuest, setNumHardQuest] = useState<number>(3);
   const [error, setError] = useState<string | null>(null);
 
   const [text, setText] = useState<string>("");
   const [file, setFile] = useState<File | undefined>(undefined);
+  const [idPdf, setIdPdf] = useState<number>(-1);
+  const [question, setQuestion] = useState<any[]>([]);
+  const [isLoading, setIsloading] = useState<boolean>(false);
 
   const nextStep = () => {
     if (step === 1 && !selectedOption) {
@@ -39,10 +45,10 @@ const Questgen = () => {
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(e.target.value);
   };
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNumEasyQuestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     if (inputValue === "") {
-      setNumQuest(0);
+      setNumEasyQuest(0);
       setError(null);
       return;
     }
@@ -55,21 +61,103 @@ const Questgen = () => {
         setError("Number must be less than 25.");
       } else {
         setError(null);
-        setNumQuest(+inputValue);
+        setNumEasyQuest(+inputValue);
       }
     }
   };
-  const submitForm = () => {
-    if (!error) {
-      if (selectedOption === "text") {
-        console.log(text);
-        console.log("Form submitted");
+  const handleNumMediumQuestChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
+      setNumMediumQuest(0);
+      setError(null);
+      return;
+    }
+
+    if (!/^\d+$/.test(inputValue)) {
+      setError("Please enter a valid number.");
+    } else {
+      const numericValue = parseInt(inputValue, 10);
+      if (numericValue >= 25) {
+        setError("Number must be less than 25.");
       } else {
-        console.log(file);
-        console.log("Form submitted");
+        setError(null);
+        setNumMediumQuest(+inputValue);
       }
     }
   };
+  const handleNumHardQuestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
+      setNumHardQuest(0);
+      setError(null);
+      return;
+    }
+
+    if (!/^\d+$/.test(inputValue)) {
+      setError("Please enter a valid number.");
+    } else {
+      const numericValue = parseInt(inputValue, 10);
+      if (numericValue >= 25) {
+        setError("Number must be less than 25.");
+      } else {
+        setError(null);
+        setNumHardQuest(+inputValue);
+      }
+    }
+  };
+  const submitForm = async () => {
+    setIdPdf(1);
+    // if (!error) {
+    //   if (selectedOption === "text") {
+    //     console.log(text);
+    //     console.log("Form submitted");
+    //   } else {
+    //     if (file) {
+    //       setIsloading(true);
+    //       await uploadFilePdf(file)
+    //         .then((value) => {
+    //           console.log(value.data);
+    //           setIdPdf(value.data.id);
+    //           setIsloading(false);
+    //         })
+    //         .catch((err) => {
+    //           console.log(err);
+    //           setIsloading(false);
+    //         });
+    //     }
+    //   }
+    // }
+  };
+
+  const genquestion = async () => {
+    setIsloading(true);
+    await genQuest({
+      pdf_id: idPdf,
+      type: selectedTypeQuest,
+      language: selectedLangQuest,
+      num_easy: numEasyQuest,
+      num_medium: numMediumQuest,
+      num_hard: numHardQuest,
+    })
+      .then((value) => {
+        setStep(step + 1);
+        setQuestion(value.data);
+        setIsloading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsloading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (idPdf > 0 && file) {
+      genquestion();
+    }
+  }, [idPdf]);
+
   const renderStepContent = () => {
     switch (step) {
       case 1:
@@ -116,7 +204,7 @@ const Questgen = () => {
             ) : (
               <QuestgenSendFile file={file} setFile={setFile} />
             )}
-            <div className="w-full flex justify-between pb-8">
+            <div className="w-full flex justify-between pb-8 gap-4">
               <div className="w-fit flex flex-col gap-2 items-center justify-center text-pink-1">
                 <label htmlFor="type">Question Type</label>
                 <select
@@ -134,15 +222,15 @@ const Questgen = () => {
                 </select>
               </div>
               <div className="w-fit flex flex-col gap-2 items-center justify-center text-pink-1">
-                <label htmlFor="level">Question Level</label>
+                <label htmlFor="type">Question Language</label>
                 <select
-                  name="level"
+                  name="type"
                   className="border rounded-full border-pink-1 text-pink-1 px-2"
                   onChange={(e) => {
-                    setSelectedLevelQuest(e.target.value);
+                    setSelectedLangQuest(e.target.value);
                   }}
                 >
-                  {levelQuestion.map((value, index) => (
+                  {langQuestion.map((value, index) => (
                     <option key={index} value={value.id}>
                       {value.name}
                     </option>
@@ -150,11 +238,35 @@ const Questgen = () => {
                 </select>
               </div>
               <div className="w-fit flex flex-col gap-2 items-center justify-center text-pink-1">
-                <label>Question Count</label>
+                <label>Number of easy question</label>
                 <input
                   type="text"
-                  value={numQuest}
-                  onChange={handleInputChange}
+                  value={numEasyQuest}
+                  onChange={handleNumEasyQuestChange}
+                  className={`rounded-full border border-pink-1 px-2 ${
+                    error ? "border-red-500" : ""
+                  }`}
+                />
+                {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+              </div>
+              <div className="w-fit flex flex-col gap-2 items-center justify-center text-pink-1">
+                <label>Number of medium question</label>
+                <input
+                  type="text"
+                  value={numMediumQuest}
+                  onChange={handleNumMediumQuestChange}
+                  className={` rounded-full border border-pink-1 px-2 ${
+                    error ? "border-red-500" : ""
+                  }`}
+                />
+                {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+              </div>
+              <div className="w-fit flex flex-col gap-2 items-center justify-center text-pink-1">
+                <label>Number of hard question</label>
+                <input
+                  type="text"
+                  value={numHardQuest}
+                  onChange={handleNumHardQuestChange}
                   className={`w-20 rounded-full border border-pink-1 px-2 ${
                     error ? "border-red-500" : ""
                   }`}
@@ -169,13 +281,26 @@ const Questgen = () => {
               >
                 Previous
               </button>
-              <button
-                className="w-1/2 flex justify-center bg-pink rounded-lg py-2 text-white font-bold"
-                onClick={submitForm}
-              >
-                Submit
-              </button>
+
+              {isLoading ? (
+                <div className="w-1/2 flex justify-center bg-pink rounded-lg py-2 text-white font-bold">
+                  {`⏳`}
+                </div>
+              ) : (
+                <button
+                  className="w-1/2 flex justify-center bg-pink rounded-lg py-2 text-white font-bold"
+                  onClick={submitForm}
+                >
+                  Submit
+                </button>
+              )}
             </div>
+          </div>
+        );
+      case 3:
+        return (
+          <div className="w-full flex flex-col items-center gap-4">
+            {JSON.stringify(question)}
           </div>
         );
       default:
@@ -184,8 +309,9 @@ const Questgen = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-4">
-      <div className="font-bold">
+    <div className="w-full h-full flex flex-col items-center gap-4">
+      <h1 className="text-3xl font-bold">Question generation</h1>
+      <div className="text-sm text-gray-500 italic">
         High-Quality Real-Time Streaming Quiz - Generate MCQs, True or False,
         Fill-in-the-blanks, FAQs, etc using AI
       </div>

@@ -9,7 +9,7 @@ const QuestgenSendFile: React.FC<Props> = (props) => {
   const { file, setFile } = props;
 
   const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0];
+    const selectedFile = event.target.files && event.target.files[0];
     setFile(selectedFile!);
   };
   return (
