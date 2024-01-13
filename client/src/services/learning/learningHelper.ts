@@ -23,7 +23,7 @@ export const typeQuestion = [
 export const langQuestion = [
   { id: QuestLang.VIETNAMESE, name: "Vietnamese" },
   { id: QuestLang.ENGLISH, name: "English" },
-  { id: QuestLang.JAPAN, name: "Japan" },
+  { id: QuestLang.JAPAN, name: "Japanese" },
 ];
 
 export interface Message {

@@ -1,15 +1,14 @@
 "use client";
 import Roadmap from "@/components/roadmap";
-import {
-  example,
-  roadmapItems,
-} from "@/services/orientation/orientationHelper";
+import { createRoadmap } from "@/services/orientation/orientationApi";
+import { roadmapItems } from "@/services/orientation/orientationHelper";
 import { useState } from "react";
 
 export default function Home() {
   const [subject, setSubject] = useState<string>("");
   const [time, setTime] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [data, setData] = useState<roadmapItems[]>([]);
   const handleSubjectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -35,12 +34,24 @@ export default function Home() {
     setError("");
     setTime(inputValue);
   };
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (time === "" || subject === "") {
       setError("Field cannot be empty.");
       return;
     }
-    setData(example);
+    setIsLoading(true);
+    await createRoadmap({
+      topic: subject,
+      time: time,
+    })
+      .then((value) => {
+        setData(value.data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+      });
   };
   return (
     <div className="w-screen h-full flex flex-col items-center p-10">
@@ -70,12 +81,18 @@ export default function Home() {
           {" months"}
         </div>{" "}
       </div>
-      <button
-        className="w-1/2 flex justify-center bg-pink rounded-lg py-2 text-white font-bold"
-        onClick={handleSearch}
-      >
-        Submit
-      </button>
+      {isLoading ? (
+        <div className="w-1/2 flex justify-center bg-pink rounded-lg py-2 text-white font-bold">
+          {"⏳"}{" "}
+        </div>
+      ) : (
+        <button
+          className="w-1/2 flex justify-center bg-pink rounded-lg py-2 text-white font-bold"
+          onClick={handleSearch}
+        >
+          Submit
+        </button>
+      )}
       {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
       {data.length !== 0 && <Roadmap data={data} />}
     </div>
