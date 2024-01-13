@@ -5,10 +5,9 @@ from routers import demo, userRoute, pdfRoute
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI()
-app.include_router(demo.router)
-app.include_router(userRoute.router)
-app.include_router(pdfRoute.router)
-
+app.include_router(demo.router, prefix="/api")
+app.include_router(userRoute.router, prefix="/api")
+app.include_router(pdfRoute.router, prefix="/api")
 
 
 app.add_middleware(
