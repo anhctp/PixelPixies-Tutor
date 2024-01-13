@@ -3,9 +3,9 @@ import { useState } from "react";
 import QuestgenSendText from "./sendText";
 import QuestgenSendFile from "./sendFile";
 import {
-  QuestLevel,
+  QuestLang,
   QuestType,
-  levelQuestion,
+  langQuestion,
   typeQuestion,
 } from "@/services/learning/learningHelper";
 
@@ -15,10 +15,12 @@ const Questgen = () => {
   const [selectedTypeQuest, setSelectedTypeQuest] = useState<string>(
     QuestType.MCQ
   );
-  const [selectedLevelQuest, setSelectedLevelQuest] = useState<string>(
-    QuestLevel.EASY
+  const [selectedLangQuest, setSelectedLangQuest] = useState<string>(
+    QuestLang.ENGLISH
   );
-  const [numQuest, setNumQuest] = useState<number>(0);
+  const [numEasyQuest, setNumEasyQuest] = useState<number>(0);
+  const [numMediumQuest, setNumMediumQuest] = useState<number>(0);
+  const [numHardQuest, setNumHardQuest] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
 
   const [text, setText] = useState<string>("");
@@ -39,10 +41,10 @@ const Questgen = () => {
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(e.target.value);
   };
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNumEasyQuestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     if (inputValue === "") {
-      setNumQuest(0);
+      setNumEasyQuest(0);
       setError(null);
       return;
     }
@@ -55,7 +57,49 @@ const Questgen = () => {
         setError("Number must be less than 25.");
       } else {
         setError(null);
-        setNumQuest(+inputValue);
+        setNumEasyQuest(+inputValue);
+      }
+    }
+  };
+  const handleNumMediumQuestChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
+      setNumMediumQuest(0);
+      setError(null);
+      return;
+    }
+
+    if (!/^\d+$/.test(inputValue)) {
+      setError("Please enter a valid number.");
+    } else {
+      const numericValue = parseInt(inputValue, 10);
+      if (numericValue >= 25) {
+        setError("Number must be less than 25.");
+      } else {
+        setError(null);
+        setNumMediumQuest(+inputValue);
+      }
+    }
+  };
+  const handleNumHardQuestChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    if (inputValue === "") {
+      setNumHardQuest(0);
+      setError(null);
+      return;
+    }
+
+    if (!/^\d+$/.test(inputValue)) {
+      setError("Please enter a valid number.");
+    } else {
+      const numericValue = parseInt(inputValue, 10);
+      if (numericValue >= 25) {
+        setError("Number must be less than 25.");
+      } else {
+        setError(null);
+        setNumHardQuest(+inputValue);
       }
     }
   };
@@ -134,15 +178,15 @@ const Questgen = () => {
                 </select>
               </div>
               <div className="w-fit flex flex-col gap-2 items-center justify-center text-pink-1">
-                <label htmlFor="level">Question Level</label>
+                <label htmlFor="type">Question Language</label>
                 <select
-                  name="level"
+                  name="type"
                   className="border rounded-full border-pink-1 text-pink-1 px-2"
                   onChange={(e) => {
-                    setSelectedLevelQuest(e.target.value);
+                    setSelectedLangQuest(e.target.value);
                   }}
                 >
-                  {levelQuestion.map((value, index) => (
+                  {langQuestion.map((value, index) => (
                     <option key={index} value={value.id}>
                       {value.name}
                     </option>
@@ -150,11 +194,35 @@ const Questgen = () => {
                 </select>
               </div>
               <div className="w-fit flex flex-col gap-2 items-center justify-center text-pink-1">
-                <label>Question Count</label>
+                <label>Number of easy question</label>
                 <input
                   type="text"
-                  value={numQuest}
-                  onChange={handleInputChange}
+                  value={numEasyQuest}
+                  onChange={handleNumEasyQuestChange}
+                  className={`w-20 rounded-full border border-pink-1 px-2 ${
+                    error ? "border-red-500" : ""
+                  }`}
+                />
+                {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+              </div>
+              <div className="w-fit flex flex-col gap-2 items-center justify-center text-pink-1">
+                <label>Number of medium question</label>
+                <input
+                  type="text"
+                  value={numMediumQuest}
+                  onChange={handleNumMediumQuestChange}
+                  className={`w-20 rounded-full border border-pink-1 px-2 ${
+                    error ? "border-red-500" : ""
+                  }`}
+                />
+                {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+              </div>
+              <div className="w-fit flex flex-col gap-2 items-center justify-center text-pink-1">
+                <label>Number of hard question</label>
+                <input
+                  type="text"
+                  value={numHardQuest}
+                  onChange={handleNumHardQuestChange}
                   className={`w-20 rounded-full border border-pink-1 px-2 ${
                     error ? "border-red-500" : ""
                   }`}

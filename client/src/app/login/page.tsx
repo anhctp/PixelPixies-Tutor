@@ -12,6 +12,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { login } from "@/services/user/userApi";
+import useAuthStore from "@/stores/authStore";
+import { useUserStore } from "@/stores/userStore";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -24,15 +28,35 @@ const formSchema = z.object({
 });
 
 export default function Home() {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
+      password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (values) {
+      await login({
+        email: values.email,
+        password: values.password,
+      })
+        .then((data) => {
+          useAuthStore.getState().setToken(data.data.jwtToken);
+          useAuthStore.getState().setAuthorized(true);
+          const newUser = data.data.user;
+          localStorage.setItem("user", JSON.stringify(newUser));
+          useUserStore.getState().setUser(newUser);
+          localStorage.setItem("token", data.data.jwtToken);
+          router.push("/");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
   return (
     <div className="w-screen h-full flex flex-col items-center p-10">

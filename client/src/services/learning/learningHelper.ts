@@ -11,10 +11,10 @@ export enum QuestType {
   TF = "tf",
   FIB = "fib",
 }
-export enum QuestLevel {
-  EASY = "easy",
-  MEDIUM = "medium",
-  HARD = "hard",
+export enum QuestLang {
+  VIETNAMESE = "Tiếng Việt",
+  ENGLISH = "English",
+  JAPAN = "日本語",
 }
 
 export const typeQuestion = [
@@ -22,10 +22,10 @@ export const typeQuestion = [
   { id: QuestType.TF, name: "True or False" },
   { id: QuestType.FIB, name: "Fill in the blanks" },
 ];
-export const levelQuestion = [
-  { id: QuestLevel.EASY, name: "Easy" },
-  { id: QuestLevel.MEDIUM, name: "Medium" },
-  { id: QuestLevel.HARD, name: "Hard" },
+export const langQuestion = [
+  { id: QuestLang.VIETNAMESE, name: "Vietnamese" },
+  { id: QuestLang.ENGLISH, name: "English" },
+  { id: QuestLang.JAPAN, name: "Japan" },
 ];
 
 export interface Message {
