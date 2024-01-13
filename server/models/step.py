@@ -5,6 +5,8 @@ class StepModel(database.Base):
     __tablename__ = "Steps"
     id = Column(Integer, primary_key=True, index=True)
     roadmap_id = Column(Integer, ForeignKey("Roadmaps.id"))
-    months = Column(Integer)
-    content = Column(String(50))
-    path = Column(String(50))
+    step_number = Column(Integer)
+    resource_name = Column(String(100))
+    resource_link = Column(String(100))
+    task = Column(String(100))
+    time = Column(String(20))
