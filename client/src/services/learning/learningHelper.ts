@@ -7,9 +7,8 @@ export enum LearningItems {
 export const WORDLIMIT = 1;
 
 export enum QuestType {
-  MCQ = "mcq",
-  TF = "tf",
-  FIB = "fib",
+  MCQ = "Multiple choice Question",
+  TF = "True False Question",
 }
 export enum QuestLang {
   VIETNAMESE = "Tiếng Việt",
@@ -20,7 +19,6 @@ export enum QuestLang {
 export const typeQuestion = [
   { id: QuestType.MCQ, name: "Multiple choice question" },
   { id: QuestType.TF, name: "True or False" },
-  { id: QuestType.FIB, name: "Fill in the blanks" },
 ];
 export const langQuestion = [
   { id: QuestLang.VIETNAMESE, name: "Vietnamese" },
@@ -49,3 +47,12 @@ export const data = [
     name: "askjaksd",
   },
 ];
+
+export interface GenQuest {
+  pdf_id: number;
+  type: string;
+  language: string;
+  num_easy: number;
+  num_medium: number;
+  num_hard: number;
+}
