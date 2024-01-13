@@ -3,10 +3,11 @@ import time
 from openai import AzureOpenAI
 import openai
 
-
+AZURE_OPENAI_ENDPOINT="https://sunhackathon20.openai.azure.com/"
+AZURE_OPENAI_KEY="bbd558e31b164b7898dcfe1f5579c041"
 client = AzureOpenAI(
-    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-    api_key=os.getenv("AZURE_OPENAI_KEY"),
+    azure_endpoint=AZURE_OPENAI_ENDPOINT,
+    api_key=AZURE_OPENAI_KEY,
     api_version="2023-05-15",
 )
 
@@ -38,6 +39,8 @@ def get_chat(messages: dict, engine="gpt-35-turbo", type='generate_question'):
         content="You are an tutor whose primary goal is to generate question for student to understand the document."
     elif type=='marking':
         content="You are an tutor whose primary goal is to grade student's exercise and correct it."
+    else:
+        content="You are an tutor whose primary goal is to create a roadmap for student to learn new topic."
     response = client.chat.completions.create(
         model="GPT35TURBO",# replace this value with the deployment name you chose when you deployed the associated model.
         messages = [{"role":"system","content":content},
