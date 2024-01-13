@@ -41,7 +41,6 @@ export default function Home() {
       return;
     }
     setData(example);
-    console.log("submitted!");
   };
   return (
     <div className="w-screen h-full flex flex-col items-center p-10">

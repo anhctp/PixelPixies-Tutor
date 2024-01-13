@@ -3,12 +3,12 @@ import React, { useEffect, useState } from "react";
 
 interface Props {
   id: number;
-  level: QuestLevel | undefined;
+  level: string | undefined;
   question: string;
   answers: string[];
   true_answer: string;
   showAnswer: boolean;
-  setPoint: React.Dispatch<React.SetStateAction<number>>;
+  setPoint: React.Dispatch<React.SetStateAction<number>> | undefined;
 }
 
 const Mcq: React.FC<Props> = (props) => {
@@ -16,7 +16,7 @@ const Mcq: React.FC<Props> = (props) => {
     props;
   const [answerSelected, setAnswerSelected] = useState<string>();
   useEffect(() => {
-    if (showAnswer && answerSelected === true_answer) {
+    if (showAnswer && answerSelected === true_answer && setPoint) {
       setPoint((prev) => {
         return prev + 1;
       });

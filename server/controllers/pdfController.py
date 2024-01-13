@@ -82,7 +82,7 @@ class PDFController:
                     opt2=question["options"][1],
                     opt3=question["options"][2],
                     opt4=question["options"][3],
-                    true_opt=question["true option"][0],
+                    true_opt=question["true_option"][0],
                 )
             elif type == QuestionType.TF:
                 if question["answer"] == "True":

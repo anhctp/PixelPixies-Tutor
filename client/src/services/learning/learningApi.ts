@@ -1,7 +1,7 @@
 import axios from "axios";
 import { GenQuest } from "./learningHelper";
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "http://localhost:8000/api";
+axios.defaults.baseURL = "http://localhost:8000";
 const token =
   typeof window !== "undefined" ? localStorage.getItem("token") : "";
 export const uploadFilePdf = (file: File) => {

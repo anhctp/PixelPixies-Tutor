@@ -4,11 +4,13 @@ import QuestgenSendText from "./sendText";
 import QuestgenSendFile from "./sendFile";
 import {
   QuestLang,
+  QuestLevel,
   QuestType,
   langQuestion,
   typeQuestion,
 } from "@/services/learning/learningHelper";
 import { genQuest, uploadFilePdf } from "@/services/learning/learningApi";
+import Mcq from "../me/questModal/mcq";
 
 const Questgen = () => {
   const [step, setStep] = useState(1);
@@ -108,27 +110,23 @@ const Questgen = () => {
     }
   };
   const submitForm = async () => {
-    setIdPdf(1);
-    // if (!error) {
-    //   if (selectedOption === "text") {
-    //     console.log(text);
-    //     console.log("Form submitted");
-    //   } else {
-    //     if (file) {
-    //       setIsloading(true);
-    //       await uploadFilePdf(file)
-    //         .then((value) => {
-    //           console.log(value.data);
-    //           setIdPdf(value.data.id);
-    //           setIsloading(false);
-    //         })
-    //         .catch((err) => {
-    //           console.log(err);
-    //           setIsloading(false);
-    //         });
-    //     }
-    //   }
-    // }
+    if (!error) {
+      if (selectedOption === "text") {
+      } else {
+        if (file) {
+          setIsloading(true);
+          await uploadFilePdf(file)
+            .then((value) => {
+              setIdPdf(value.data.id);
+              setIsloading(false);
+            })
+            .catch((err) => {
+              console.log(err);
+              setIsloading(false);
+            });
+        }
+      }
+    }
   };
 
   const genquestion = async () => {
@@ -298,11 +296,26 @@ const Questgen = () => {
           </div>
         );
       case 3:
-        return (
-          <div className="w-full flex flex-col items-center gap-4">
-            {JSON.stringify(question)}
+        let level = QuestLevel.EASY;
+        return question.map((value, index) => (
+          <div key={index}>
+            {selectedTypeQuest === QuestType.MCQ ? (
+              <Mcq
+                id={index}
+                level={
+                  value.difficulty ? value.difficulty.toLowerCase() : level
+                }
+                question={value.question}
+                answers={value.options}
+                true_answer={value.true_option[0]}
+                showAnswer={true}
+                setPoint={undefined}
+              />
+            ) : (
+              <div></div>
+            )}
           </div>
-        );
+        ));
       default:
         return null;
     }
