@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GenQuest } from "./learningHelper";
+import { GenQuest, UploadText } from "./learningHelper";
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = "http://localhost:8000";
 const token =
@@ -15,6 +15,13 @@ export const uploadFilePdf = (file: File) => {
       },
     }
   );
+};
+export const uploadTextGenquest = (text: UploadText) => {
+  return axios.post("/PDF/upload/text", text, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 export const genQuest = (payload: GenQuest) => {
   return axios.post("PDF/pdf_to_text/", payload, {

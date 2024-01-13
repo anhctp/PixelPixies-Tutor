@@ -77,6 +77,3 @@ def detect_document_uri(uri):
             "https://cloud.google.com/apis/design/errors".format(response.error.message)
         )
     return res
-
-text = detect_document_uri("gs://tutor_pdf/test1.jpg")
-print(text)

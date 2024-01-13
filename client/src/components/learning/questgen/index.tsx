@@ -9,8 +9,13 @@ import {
   langQuestion,
   typeQuestion,
 } from "@/services/learning/learningHelper";
-import { genQuest, uploadFilePdf } from "@/services/learning/learningApi";
+import {
+  genQuest,
+  uploadFilePdf,
+  uploadTextGenquest,
+} from "@/services/learning/learningApi";
 import Mcq from "../me/questModal/mcq";
+import Tf from "../me/questModal/tf";
 
 const Questgen = () => {
   const [step, setStep] = useState(1);
@@ -112,6 +117,18 @@ const Questgen = () => {
   const submitForm = async () => {
     if (!error) {
       if (selectedOption === "text") {
+        if (text) {
+          setIsloading(true);
+          await uploadTextGenquest({ text: text })
+            .then((value) => {
+              setIdPdf(value.data.id);
+              setIsloading(false);
+            })
+            .catch((err) => {
+              console.log(err);
+              setIsloading(false);
+            });
+        }
       } else {
         if (file) {
           setIsloading(true);
@@ -151,7 +168,7 @@ const Questgen = () => {
   };
 
   useEffect(() => {
-    if (idPdf > 0 && file) {
+    if (idPdf > 0 && (file || text)) {
       genquestion();
     }
   }, [idPdf]);
@@ -300,19 +317,34 @@ const Questgen = () => {
         return question.map((value, index) => (
           <div key={index}>
             {selectedTypeQuest === QuestType.MCQ ? (
-              <Mcq
-                id={index}
-                level={
-                  value.difficulty ? value.difficulty.toLowerCase() : level
-                }
-                question={value.question}
-                answers={value.options}
-                true_answer={value.true_option[0]}
-                showAnswer={true}
-                setPoint={undefined}
-              />
+              <div>
+                {" "}
+                <Mcq
+                  id={index}
+                  level={
+                    value.difficulty ? value.difficulty.toLowerCase() : level
+                  }
+                  question={value.question}
+                  answers={value.options}
+                  true_answer={value.true_option[0]}
+                  showAnswer={true}
+                  setPoint={undefined}
+                />
+              </div>
             ) : (
-              <div></div>
+              <div>
+                <Tf
+                  id={index}
+                  level={
+                    value.difficulty ? value.difficulty.toLowerCase() : level
+                  }
+                  question={value.question}
+                  true_answer={value.answer}
+                  showAnswer={true}
+                  setPoint={undefined}
+                />
+                <div className="italic">{value.explanation}</div>
+              </div>
             )}
           </div>
         ));

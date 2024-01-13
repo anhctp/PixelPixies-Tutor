@@ -7,14 +7,14 @@ interface Props {
   question: string;
   true_answer: string;
   showAnswer: boolean;
-  setPoint: React.Dispatch<React.SetStateAction<number>>;
+  setPoint: React.Dispatch<React.SetStateAction<number>> | undefined;
 }
 
 const Tf: React.FC<Props> = (props) => {
   const { id, level, question, true_answer, showAnswer, setPoint } = props;
   const [answerSelected, setAnswerSelected] = useState<string>();
   useEffect(() => {
-    if (showAnswer && answerSelected === true_answer) {
+    if (showAnswer && answerSelected === true_answer && setPoint) {
       setPoint((prev) => {
         return prev + 1;
       });

@@ -1,5 +1,15 @@
-export interface EvaluationCreate {
+export interface EvaluationCreateText {
   question: string;
-  answer: string | File;
+  context: string;
   markingCriteria: string;
+}
+export interface EvaluationCreateFile {
+  question: string;
+  file: File;
+  markingCriteria: string;
+}
+export interface EvaluationResponse {
+  score: number;
+  comment: string;
+  advice: string;
 }

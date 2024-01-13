@@ -4,7 +4,7 @@ export enum LearningItems {
   ME = "My Learning",
 }
 
-export const WORDLIMIT = 1;
+export const WORDLIMIT = 300;
 
 export enum QuestType {
   MCQ = "Multiple choice Question",
@@ -61,4 +61,8 @@ export enum QuestLevel {
   EASY = "easy",
   MEDIUM = "medium",
   HARD = "hard",
+}
+
+export interface UploadText {
+  text: string;
 }

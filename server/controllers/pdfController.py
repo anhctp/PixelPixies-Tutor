@@ -39,6 +39,22 @@ class PDFController:
         db.refresh(new_pdf)
         return new_pdf
 
+    def upload_text(
+        text: str,
+        db: Session = Depends(getDatabase),
+        current_user: UserModel = Depends(verifyToken),
+    ):
+        new_pdf = PDFModel(
+            user_id=current_user.id,
+            path="",
+            gcs_path="",
+            content=text,
+        )
+        db.add(new_pdf)
+        db.commit()
+        db.refresh(new_pdf)
+        return new_pdf
+
     def generate_question(
         pdf_id: int,
         type: QuestionType,
