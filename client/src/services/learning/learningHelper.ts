@@ -23,7 +23,7 @@ export const typeQuestion = [
 export const langQuestion = [
   { id: QuestLang.VIETNAMESE, name: "Vietnamese" },
   { id: QuestLang.ENGLISH, name: "English" },
-  { id: QuestLang.JAPAN, name: "Japan" },
+  { id: QuestLang.JAPAN, name: "Japanese" },
 ];
 
 export interface Message {
@@ -35,18 +35,7 @@ export interface IChatGPTPayload {
   prompt: string;
 }
 
-export const headers = ["ID", "Name", "Actions"];
-
-export const data = [
-  {
-    id: 1,
-    name: "askjdaksd",
-  },
-  {
-    id: 2,
-    name: "askjaksd",
-  },
-];
+export const headers = ["ID", "Path File", "content", "Actions"];
 
 export interface GenQuest {
   pdf_id: number;
@@ -65,4 +54,21 @@ export enum QuestLevel {
 
 export interface UploadText {
   text: string;
+}
+
+export interface McqObject {
+  id: number;
+  question_list_id: number;
+  opt1: string;
+  opt2: string;
+  opt3: string;
+  opt4: string;
+  true_opt: string;
+  question: string;
+}
+export interface TfObject {
+  id: number;
+  question_list_id: number;
+  answer: string;
+  question: string;
 }

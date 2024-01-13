@@ -1,65 +1,77 @@
-import { useState } from "react";
-import Mcq from "./mcq";
-import { QuestLevel } from "@/services/learning/learningHelper";
+import { useEffect, useState } from "react";
+import {
+  McqObject,
+  QuestLevel,
+  TfObject,
+} from "@/services/learning/learningHelper";
 import { ScoreModal } from "./scoreModal";
+import { getQuestByListId } from "@/services/learning/learningApi";
+import Mcq from "./mcq";
 import Tf from "./tf";
 
 interface Props {
+  questId: number;
   setOpenQuestModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const QuestModal: React.FC<Props> = (props) => {
-  const { setOpenQuestModal } = props;
+  const { questId, setOpenQuestModal } = props;
   const [showCorrectAnswers, setShowCorrectAnswers] = useState(false);
   const [openScoreModal, setOpenScoreModal] = useState(false);
   const [point, setPoint] = useState<number>(0);
+  const [tf, setTf] = useState<TfObject[]>([]);
+  const [mcq, setMcq] = useState<McqObject[]>([]);
+
+  const getQuests = async () => {
+    await getQuestByListId(questId)
+      .then((value) => {
+        setMcq(value.data.mcq);
+        setTf(value.data.tf);
+      })
+      .catch((err) => console.log(err));
+  };
 
   const handleSubmit = () => {
     setShowCorrectAnswers(true);
     setOpenScoreModal(true);
   };
+  useEffect(() => {
+    getQuests();
+  }, [questId]);
 
   return (
     <div className="w-full">
-      <Mcq
-        id={1}
-        level={QuestLevel.EASY}
-        question="quest"
-        answers={["ans1", "ans2", "ans3", "ans4"]}
-        true_answer="ans1"
-        showAnswer={showCorrectAnswers}
-        setPoint={setPoint}
-      />
-      <Mcq
-        id={2}
-        level={QuestLevel.MEDIUM}
-        question="quest"
-        answers={["ans1", "ans2", "ans3", "ans4"]}
-        true_answer="ans1"
-        showAnswer={showCorrectAnswers}
-        setPoint={setPoint}
-      />
-      <Tf
-        id={3}
-        level={QuestLevel.HARD}
-        question="questme"
-        true_answer="True"
-        showAnswer={showCorrectAnswers}
-        setPoint={setPoint}
-      />
-      <Tf
-        id={4}
-        level={QuestLevel.HARD}
-        question="quest"
-        true_answer="True"
-        showAnswer={showCorrectAnswers}
-        setPoint={setPoint}
-      />
+      {mcq.map((item, index) => (
+        <div key={index}>
+          <Mcq
+            id={item.id}
+            level={undefined}
+            question={item.question}
+            answers={[item.opt1, item.opt2, item.opt3, item.opt4]}
+            true_answer={item.true_opt}
+            showAnswer={showCorrectAnswers}
+            setPoint={setPoint}
+          />
+        </div>
+      ))}
+      {tf.map((item, index) => (
+        <div key={index}>
+          <Tf
+            id={item.id}
+            level={undefined}
+            question={item.question}
+            true_answer={item.answer}
+            showAnswer={showCorrectAnswers}
+            setPoint={setPoint}
+          />
+        </div>
+      ))}
+
       <div className="flex justify-center items-center">
         {showCorrectAnswers ? (
           <div className="w-full flex flex-col justify-center items-center gap-4">
             <div className="text-3xl text-pink-1">
-              Score: {point}/{2}{" "}
+              Score: {point}/{mcq.length + tf.length}{" "}
             </div>
             <button
               onClick={() => setOpenQuestModal(false)}
@@ -81,7 +93,7 @@ const QuestModal: React.FC<Props> = (props) => {
         <ScoreModal
           setOpenScoreModal={setOpenScoreModal}
           correct={point}
-          total={2}
+          total={mcq.length + tf.length}
         />
       )}
     </div>

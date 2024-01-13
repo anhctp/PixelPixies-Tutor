@@ -48,10 +48,10 @@ const Roadmap: React.FC<Props> = (props) => {
               variant="h6"
               component="span"
             >
-              {item.path}
+              <a href={item["resource link"]}>{item["resource name"]}</a>
             </Typography>
             <Typography className="text-[#2885fd] italic">
-              {item.content}
+              {item.task}
             </Typography>
           </TimelineContent>
         </TimelineItem>
