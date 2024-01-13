@@ -26,3 +26,12 @@ export const levelQuestion = [
   { id: QuestLevel.MEDIUM, name: "Medium" },
   { id: QuestLevel.HARD, name: "Hard" },
 ];
+
+export interface Message {
+  id: number;
+  content: string;
+  sender: "user" | "bot";
+}
+export interface IChatGPTPayload {
+  prompt: string;
+}
