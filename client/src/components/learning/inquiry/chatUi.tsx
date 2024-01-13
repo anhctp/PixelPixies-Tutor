@@ -1,13 +1,6 @@
+import { IChatGPTPayload, Message } from "@/services/learning/learningHelper";
 import React, { FormEvent, useEffect, useState } from "react";
 
-interface Message {
-  id: number;
-  content: string;
-  sender: "user" | "bot";
-}
-interface IChatGPTPayload {
-  prompt: string;
-}
 export const ChatUI = () => {
   const [response, setResponse] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -81,11 +74,6 @@ export const ChatUI = () => {
             {message.content}
           </div>
         ))}
-        {response && (
-          <div key={messages?.length + 1} className={`mb-4 p-2 bg-gray-200`}>
-            {response}
-          </div>
-        )}
       </div>
       <div className="p-4 border-t border-gray-300">
         <div className="flex">
