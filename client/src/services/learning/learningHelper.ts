@@ -1,6 +1,7 @@
 export enum LearningItems {
   QUESTGEN = "Question generation",
   INQUIRY = "Documentation inquiry",
+  ME = "My Learning",
 }
 
 export const WORDLIMIT = 1;
@@ -35,3 +36,16 @@ export interface Message {
 export interface IChatGPTPayload {
   prompt: string;
 }
+
+export const headers = ["ID", "Name", "Actions"];
+
+export const data = [
+  {
+    id: 1,
+    name: "askjdaksd",
+  },
+  {
+    id: 2,
+    name: "askjaksd",
+  },
+];
