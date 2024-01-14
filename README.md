@@ -13,7 +13,7 @@ Features:
 - Inquiring the file
 
 ## Demo
-PixelPixies Tutor [https://www.youtube.com/watch?v=APjI5BKvDf0]
+https://www.youtube.com/watch?v=APjI5BKvDf0
 
 ## Technology
 - Frontent: NextJS
