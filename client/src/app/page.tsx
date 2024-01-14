@@ -1,8 +1,8 @@
 import Link from "next/link";
 export default function Home() {
   return (
-    <div className="w-full h-full bg-pink flex flex-col items-start justify-center gap-8 p-4">
-      <div className="text-8xl">
+    <div className="w-full h-full bg-pink flex flex-col items-start justify-center gap-8 p-4 font-semibold">
+      <div className="text-8xl ">
         Unlock your potential with the best tutors - PixelPixies.
       </div>
       <Link

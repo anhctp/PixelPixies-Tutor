@@ -1,5 +1,6 @@
+import { create } from "zustand";
 import axios from "axios";
-import { GenQuest, UploadText } from "./learningHelper";
+import { ChatConversation, GenQuest, UploadText } from "./learningHelper";
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = "http://localhost:8000";
 const token =
@@ -46,6 +47,43 @@ export const deleteListQuest = (listId: number) => {
 };
 export const getQuestByListId = (listId: number) => {
   return axios.get(`question/list/${listId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const createChatWithText = (context: string) => {
+  return axios.post(
+    "/conversation/chat-with-text",
+    { user_input: context },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+export const createChatWithFile = (file: File) => {
+  return axios.post(
+    "/conversation/chat-with-text",
+    { file: file },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+export const chatConversation = (payload: ChatConversation) => {
+  return axios.post("/conversation/chat", payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const getChatConversationById = (id: number) => {
+  return axios.get(`/conversation/chat/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

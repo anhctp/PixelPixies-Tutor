@@ -3,6 +3,11 @@ import { useState } from "react";
 import QuestgenSendText from "../questgen/sendText";
 import QuestgenSendFile from "../questgen/sendFile";
 import { ChatUI } from "./chatUi";
+import {
+  chatConversation,
+  createChatWithFile,
+  createChatWithText,
+} from "@/services/learning/learningApi";
 
 const Inquiry = () => {
   const [step, setStep] = useState(1);
@@ -10,6 +15,8 @@ const Inquiry = () => {
 
   const [text, setText] = useState<string>("");
   const [file, setFile] = useState<File | undefined>(undefined);
+  const [idConversation, setIdConversation] = useState<number>(-1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const nextStep = () => {
     if (step === 1 && !selectedOption) {
@@ -27,15 +34,43 @@ const Inquiry = () => {
     setSelectedOption(e.target.value);
   };
 
+  const handleUploadText = async () => {
+    if (text) {
+      setIsLoading(true);
+      await createChatWithText(text)
+        .then((value) => {
+          setIdConversation(value.data.id);
+          setIsLoading(false);
+          setStep(step + 1);
+        })
+        .catch((err) => {
+          console.log(err);
+          setIsLoading(false);
+        });
+    }
+  };
+  const handleUploadFile = async () => {
+    if (file) {
+      setIsLoading(true);
+      await createChatWithFile(file)
+        .then((value) => {
+          setIdConversation(value.data.id);
+          setIsLoading(false);
+          setStep(step + 1);
+        })
+        .catch((err) => {
+          console.log(err);
+          setIsLoading(false);
+        });
+    }
+  };
+
   const uploadDoc = () => {
     if (selectedOption === "text") {
-      console.log(text);
-      console.log("Form submitted");
+      handleUploadText();
     } else {
-      console.log(file);
-      console.log("Form submitted");
+      handleUploadFile;
     }
-    setStep(step + 1);
   };
   const renderStepContent = () => {
     switch (step) {
@@ -77,7 +112,7 @@ const Inquiry = () => {
         );
       case 2:
         return (
-          <div className="h-full">
+          <div className="w-full h-full">
             {selectedOption === "text" ? (
               <QuestgenSendText text={text} setText={setText} />
             ) : (
@@ -90,19 +125,25 @@ const Inquiry = () => {
               >
                 Previous
               </button>
-              <button
-                className="w-1/2 flex justify-center bg-pink rounded-lg py-2 text-white font-bold"
-                onClick={uploadDoc}
-              >
-                Upload documents
-              </button>
+              {isLoading ? (
+                <div className="w-1/2 flex justify-center bg-pink rounded-lg py-2 text-white font-bold">
+                  {"⏳"}
+                </div>
+              ) : (
+                <button
+                  className="w-1/2 flex justify-center bg-pink rounded-lg py-2 text-white font-bold"
+                  onClick={uploadDoc}
+                >
+                  Upload documents
+                </button>
+              )}
             </div>
           </div>
         );
       case 3:
         return (
           <div className="h-full">
-            <ChatUI />
+            <ChatUI id={idConversation} />
           </div>
         );
       default:

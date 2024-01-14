@@ -1,6 +1,7 @@
 from datetime import datetime
 import json
 from fastapi import File, HTTPException, UploadFile, Depends
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from database import getDatabase
 from ai.prompt.gen_ques_prompt import *
@@ -39,6 +40,16 @@ class ConverationController:
         db.refresh(newConversation)
         return newConversation
 
+    def get_all_chat(
+        db: Session = Depends(getDatabase),
+        current_user: UserModel = Depends(verifyToken),
+    ):
+        return (
+            db.query(ConversationModel)
+            .filter(ConversationModel.user_id == current_user.id)
+            .all()
+        )
+
     def create_chat_text(
         content: str = "",
         db: Session = Depends(getDatabase),
@@ -75,10 +86,23 @@ class ConverationController:
         )
         if not chat:
             raise HTTPException(status_code=404, detail=f"Not exist!")
+
+        return StreamingResponse(
+            get_chat_completion_stream(filePath=chat.path, message=content),
+            media_type="text/event-stream",
+        )
+
+    def getChat(
+        chatId: int,
+        db: Session = Depends(getDatabase),
+        current_user: UserModel = Depends(verifyToken),
+    ):
+        chat = (
+            db.query(ConversationModel).filter(ConversationModel.id == chatId).first()
+        )
+        if not chat:
+            raise HTTPException(status_code=404, detail=f"Not exist!")
         with open(chat.path, "r") as json_file:
             conversation = json.load(json_file)
 
-        conversation.append({"role": "user", "content": content})
-        with open(chat.path, "w") as json_file:
-            json.dump(conversation, json_file)
-        return get_chat_completion_stream(messages=conversation)
+        return conversation
