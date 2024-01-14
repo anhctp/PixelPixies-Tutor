@@ -2,6 +2,9 @@ import os
 import time
 from openai import AzureOpenAI
 import openai
+from dotenv import load_dotenv
+
+load_dotenv()
 
 client = AzureOpenAI(
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
@@ -69,3 +72,22 @@ def get_chat_completion_stream(
             res_time = time.time() - start_time
             print(f"response :{current_response}, time: {res_time}")
             yield "data: " + current_response + "\n\n"
+
+
+def get_chat_completion_stream(
+    messages: dict,
+    engine="GPT35TURBO",
+) -> str:
+    res = client.chat.completions.create(
+        model=engine,
+        messages=messages,
+        stream=True,
+    )
+    result_string = ""
+    for event in res:
+        if event.choices[0].delta.content:
+            current_response = event.choices[0].delta.content
+            print(current_response)
+            yield current_response
+            result_string += current_response
+    messages.append({"role": "assistant", "content": result_string})
