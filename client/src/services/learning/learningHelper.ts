@@ -1,3 +1,4 @@
+import { chatConversation } from "./learningApi";
 export enum LearningItems {
   QUESTGEN = "Question generation",
   INQUIRY = "Documentation inquiry",
@@ -29,7 +30,7 @@ export const langQuestion = [
 export interface Message {
   id: number;
   content: string;
-  sender: "user" | "bot";
+  role: "user" | "assistant";
 }
 export interface IChatGPTPayload {
   prompt: string;
@@ -71,4 +72,8 @@ export interface TfObject {
   question_list_id: number;
   answer: string;
   question: string;
+}
+export interface ChatConversation {
+  conversation_id: number;
+  user_input: string;
 }

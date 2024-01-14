@@ -38,7 +38,7 @@ def create_chat_with_text(
     )
 
 
-@router.post("/{conversation_id}")
+@router.post("/chat")
 def chat(
     payload: Chat,
     db: Session = Depends(getDatabase),
@@ -47,6 +47,19 @@ def chat(
     return ConverationController.chat(
         chatId=payload.conversation_id,
         content=payload.user_input,
+        db=db,
+        current_user=current_user,
+    )
+
+
+@router.get("/chat/{chat_id}")
+def chat(
+    chat_id: int,
+    db: Session = Depends(getDatabase),
+    current_user: UserModel = Depends(verifyToken),
+):
+    return ConverationController.getChat(
+        chatId=chat_id,
         db=db,
         current_user=current_user,
     )

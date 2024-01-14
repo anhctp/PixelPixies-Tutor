@@ -1,3 +1,4 @@
+import json
 import os
 import time
 from openai import AzureOpenAI
@@ -75,12 +76,17 @@ def get_chat_completion_stream(
 
 
 def get_chat_completion_stream(
-    messages: dict,
+    filePath: str,
+    message: str,
     engine="GPT35TURBO",
 ) -> str:
+    with open(filePath, "r") as json_file:
+        conversation = json.load(json_file)
+
+    conversation.append({"role": "user", "content": message})
     res = client.chat.completions.create(
         model=engine,
-        messages=messages,
+        messages=conversation,
         stream=True,
     )
     result_string = ""
@@ -90,4 +96,7 @@ def get_chat_completion_stream(
             print(current_response)
             yield current_response
             result_string += current_response
-    messages.append({"role": "assistant", "content": result_string})
+    conversation.append({"role": "assistant", "content": result_string})
+
+    with open(filePath, "w") as json_file:
+        json.dump(conversation, json_file)
